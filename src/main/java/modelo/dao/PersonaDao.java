@@ -1,0 +1,109 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package modelo.dao;
+
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import javax.swing.JOptionPane;
+import modelo.conexion.Conexion;
+import modelo.vo.PersonaVo;
+/**
+ *
+ * @author Robinson
+ */
+/*La clase PersonaDao.java contendrá los métodos necesarios para realizar la inserción ,búsqueda, 
+eliminación y actualización de datos*/
+public class PersonaDao {
+    
+    public void registrarPersona(PersonaVo miPersona){
+    
+    Conexion conex = new Conexion();
+    try{
+        Statement estatuto = conex.getConnection().createStatement();
+        estatuto.executeUpdate("INSERT INTO persona VALUES('"+miPersona.getIdPersona()+"','"+miPersona.getNombrePersona()+"','"
+                +miPersona.getEdadPersona()+"','"+miPersona.getTelefonoPersona()+"','"+miPersona.getProfesionPersona()+"')");
+                JOptionPane.showMessageDialog(null, "Se a registrado Exitosamente", "Informacion", JOptionPane.INFORMATION_MESSAGE);
+                estatuto.close();
+                conex.desconectar();
+        
+       }catch(SQLException e){
+             System.out.println(e.getMessage());
+             JOptionPane.showMessageDialog(null, "No se registro");
+    
+       }
+    }
+    public PersonaVo buscarPersona(int codigo){
+    
+    Conexion conex = new Conexion();
+    PersonaVo persona = new PersonaVo();
+    boolean existe = false;
+    try{
+        PreparedStatement consulta = conex.getConnection().prepareStatement("SELECT * FROM persona where id = ?");
+        consulta.setInt(1, codigo);
+        ResultSet res = consulta.executeQuery();
+        while(res.next()){
+        existe = true;
+        persona.setIdPersona(Integer.parseInt(res.getString("id")));
+        persona.setNombrePersona(res.getString("nombre"));
+        persona.setEdadPersona(Integer.parseInt(res.getString("edad")));
+        persona.setProfesionPersona(res.getString("profesion"));
+        persona.setTelefonoPersona(Integer.parseInt(res.getString("telefono")));
+
+    }
+    res.close();
+    conex.desconectar();
+    
+    
+    }catch(SQLException e){
+      JOptionPane.showMessageDialog(null,"Error no se conecto");
+      System.out.println(e);
+    }
+    if(existe){
+       return persona;
+    }
+    else return null;
+    }
+    
+    public void modificarPersona(PersonaVo miPersona){
+      Conexion conex = new Conexion();
+      
+      try {
+         String consulta = "UPDATE persona SET id= ?, nombre = ?, edad= ?, profesion= ?, telefono= ? where id= ?";
+         PreparedStatement estatuto = conex.getConnection().prepareStatement(consulta);
+         
+         estatuto.setInt(1,miPersona.getIdPersona());
+         estatuto.setString(2,miPersona.getNombrePersona());
+         estatuto.setInt(3,miPersona.getEdadPersona());
+         estatuto.setString(4,miPersona.getProfesionPersona());
+         estatuto.setInt(5,miPersona.getTelefonoPersona());
+         estatuto.setInt(6,miPersona.getIdPersona());
+         estatuto.executeUpdate();
+         
+         JOptionPane.showMessageDialog(null, "Se a modificado correctamente","Confirmacion", JOptionPane.INFORMATION_MESSAGE);
+         
+        }catch (SQLException e){
+              System.out.println(e);
+              JOptionPane.showMessageDialog(null, "Error al Modificar","Error",JOptionPane.ERROR_MESSAGE);
+        }  
+    }
+    
+        public void eliminarPersona(String codigo) {
+          Conexion conex = new Conexion();
+          
+          try {
+             Statement estatuto = conex.getConnection().createStatement();
+             estatuto.executeUpdate("DELETE FROM persona where id= '"+ codigo+"'");
+             JOptionPane.showMessageDialog(null, "Se a eliminado correctamente", "Informacion", JOptionPane.INFORMATION_MESSAGE);
+             estatuto.close();
+             conex.desconectar();
+          }catch(SQLException e){
+              System.out.println(e.getMessage());
+              JOptionPane.showMessageDialog(null, "No se pudo eliminar");
+        } 
+    }
+}

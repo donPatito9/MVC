@@ -1,0 +1,9 @@
+vista\VentanaRegistro.class
+vista\VentanaBuscar.class
+controlador\Principal.class
+modelo\conexion\Conexion.class
+modelo\vo\PersonaVo.class
+modelo\dao\PersonaDao.class
+modelo\Logica.class
+vista\VentanaPrincipal.class
+controlador\Coordinador.class
